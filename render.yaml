@@ -1,0 +1,16 @@
+# Render Blueprint - One-click deploy to render.com
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: medical-paper-summarizer
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: 1
