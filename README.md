@@ -91,7 +91,7 @@ markdown = summary.to_markdown()
 json_str = summary.model_dump_json(indent=2)
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### System Overview
 
@@ -154,7 +154,7 @@ medical-paper-summarizer/
 └── README.md                   # This file
 ```
 
-## 🔧 Configuration
+## Configuration
 
 Edit `.env` file or set environment variables:
 
@@ -180,7 +180,7 @@ TIMEOUT=60
 RATE_LIMIT_DELAY=1.0
 ```
 
-## 📊 Output Format
+## Output Format
 
 ### JSON Schema
 
@@ -240,7 +240,7 @@ keyword1, keyword2, keyword3
 ⚠️ This summary is for academic research purposes only...
 ```
 
-## ⚠️ Safety Features
+## Safety Features
 
 1. **No Hallucination**: Only extracts information explicitly stated in source text
 2. **Numerical Accuracy**: Preserves all statistics exactly as reported
@@ -250,7 +250,7 @@ keyword1, keyword2, keyword3
 6. **Safety Disclaimer**: All outputs include academic use disclaimer
 7. **Low Temperature**: Uses temperature ≤ 0.3 for deterministic outputs
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run tests
@@ -263,7 +263,7 @@ pytest tests/test_components.py::TestPaperSummary -v
 pytest tests/ --cov=. --cov-report=html
 ```
 
-## 🎓 Advanced Usage
+##  Advanced Usage
 
 ### Custom Chunking
 
@@ -303,7 +303,7 @@ methods_section = sections['methods']
 chunks = chunker.chunk(methods_section.content)
 ```
 
-## 📝 Best Practices
+## Best Practices
 
 1. **PDF Quality**: Use text-based PDFs, not scanned images
 2. **Paper Length**: System handles up to 40 pages efficiently
@@ -312,7 +312,7 @@ chunks = chunker.chunk(methods_section.content)
 5. **Validation**: Always validate numerical accuracy in output
 6. **Clinical Use**: NEVER use for actual patient care decisions
 
-## 🔍 Troubleshooting
+##  Troubleshooting
 
 ### "No text extracted from PDF"
 - PDF may be scanned image (use OCR first)
@@ -332,7 +332,7 @@ chunks = chunker.chunk(methods_section.content)
 - Verify LLM temperature is ≤ 0.3
 - Review prompt templates for clarity
 
-## ⚖️ Disclaimer
+## Disclaimer
 
 This tool is for academic research purposes only. It does NOT:
 - Provide medical advice
@@ -342,7 +342,7 @@ This tool is for academic research purposes only. It does NOT:
 
 Always consult original papers and domain experts for medical decisions.
 
-## 📚 Citations
+## Citations
 
 If you use this tool in research, please cite:
 
@@ -351,17 +351,12 @@ Medical Research Paper Summarizer
 https://github.com/AliM3ski/MedicalPaperSummarizer
 ```
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-- Built with Claude 4 (Anthropic)
+- AI was used in assistance to create this project
 - Supports GPT-4 (OpenAI)
 - Uses industry-standard libraries (pdfplumber, BeautifulSoup, Pydantic)
 
-## 📧 Contact
-
-For questions or issues, please open a GitHub issue.
-
----
 
 **Version**: 1.0.0  
 **Last Updated**: January 30, 2026
