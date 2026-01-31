@@ -332,19 +332,6 @@ chunks = chunker.chunk(methods_section.content)
 - Verify LLM temperature is ≤ 0.3
 - Review prompt templates for clarity
 
-## 🤝 Contributing
-
-Contributions welcome! Please:
-
-1. Follow existing code style
-2. Add tests for new features
-3. Update documentation
-4. Ensure all tests pass
-
-## 📄 License
-
-MIT License - see LICENSE file for details
-
 ## ⚖️ Disclaimer
 
 This tool is for academic research purposes only. It does NOT:
@@ -361,7 +348,7 @@ If you use this tool in research, please cite:
 
 ```
 Medical Research Paper Summarizer
-https://github.com/your-repo/medical-paper-summarizer
+https://github.com/AliM3ski/MedicalPaperSummarizer
 ```
 
 ## 🙏 Acknowledgments
