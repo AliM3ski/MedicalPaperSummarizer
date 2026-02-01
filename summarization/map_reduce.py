@@ -1,6 +1,7 @@
 """
 Map-reduce summarization orchestrator.
 """
+import re
 from typing import Dict, List, Optional
 import logging
 
@@ -229,18 +230,23 @@ class MapReduceSummarizer:
         return result
     
     def _get_metadata_text(self, sections: Dict[str, Section], preamble: str = "") -> str:
-        """Get text for metadata extraction (abstract, preamble, or intro)."""
+        """Get text for metadata extraction (objective, study_type, population)."""
         parts = []
         if 'abstract' in sections:
             parts.append(sections['abstract'].content)
         elif preamble:
-            # Preamble often contains abstract for papers with numbered sections
             parts.append(preamble)
         if 'introduction' in sections:
             intro = self.chunker.truncate_to_tokens(
                 sections['introduction'].content, 1200
             )
             parts.append(intro)
+        # Include methods start - study_type and population often appear there
+        if 'methods' in sections:
+            methods = self.chunker.truncate_to_tokens(
+                sections['methods'].content, 800
+            )
+            parts.append(f"METHODS:\n{methods}")
         return "\n\n".join(parts) if parts else ""
     
     def _get_limitations_text(
@@ -290,7 +296,10 @@ class MapReduceSummarizer:
             temperature=0.2
         )
         
-        return response.strip()
+        text = response.strip()
+        # Remove leading markdown headers (## or ###) if LLM added them
+        text = re.sub(r'^#+\s*[^\n]+\n*', '', text).strip()
+        return text
     
     def _extract_findings(self, results_text: str) -> List[str]:
         """Extract key findings as list."""

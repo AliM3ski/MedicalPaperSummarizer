@@ -54,19 +54,21 @@ CHUNK SUMMARIES:
 COMBINED SUMMARY:"""
     
     # Extract study metadata
-    METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text:
+    METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text. The text may include abstract, introduction, and methods sections - extract from wherever the information appears.
 
-1. **objective**: The primary research aim, question, or purpose. What were the authors trying to find out or demonstrate? Be specific.
+1. **objective**: The primary research aim, question, or purpose. What were the authors trying to find out or demonstrate? Be specific. Often stated in the abstract or introduction.
 
-2. **study_type**: Type of study. Examples:
+2. **study_type**: Type of study. Look in both introduction and methods. Examples:
    - Clinical: RCT, cohort, case-control, cross-sectional, meta-analysis
-   - Basic science: In vitro study, laboratory study, animal study, cell culture study
+   - Basic science: In vitro study, laboratory study, animal study, cell culture study, experimental study
    - Other: Systematic review, case series, observational study
 
-3. **population**: Who or what was studied:
+3. **population**: Who or what was studied. Look in methods section if not in abstract:
    - For clinical studies: sample size, demographics, inclusion/exclusion criteria
-   - For in vitro/lab studies: cell lines, materials, specimens, or experimental subjects used
+   - For in vitro/lab studies: cell lines (e.g., mouse osteoblasts), materials (e.g., Ti6Al4V alloy), specimens
    - For animal studies: species, sample size
+
+You MUST provide all three fields. If not explicitly stated, infer the closest match from context.
 
 TEXT:
 {text}
@@ -88,6 +90,8 @@ Respond ONLY with a JSON object (no markdown, no explanation):
 5. Key procedures
 
 Be specific and include all relevant details. Preserve numerical values (doses, durations, sample sizes).
+
+Respond with plain paragraphs only. Do NOT use markdown headers (##), bullet points, or section titles. Write flowing prose.
 
 METHODS SECTION:
 {methods_text}

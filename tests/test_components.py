@@ -43,6 +43,21 @@ class TestTextCleaner:
         assert "[1,2,3]" not in cleaned
         assert "finding" in cleaned
 
+    def test_extract_title_skips_authors(self):
+        """Test that title extraction skips author lines."""
+        cleaner = TextCleaner()
+        text = """Research Article
+In Vitro Bioactivity Study of RGD-Coated Titanium Alloy
+Prothesis for Revision Total Hip Arthroplasty
+Zhentao Man,1 Dan Sha,2 Shui Sun,1 Tao Li,1 Bin Li,3 Guang Yang,1
+Correspondence should be addressed to Xiaojuan Han.
+"""
+        title = cleaner.extract_title(text)
+        assert title is not None
+        assert "Zhentao" not in title
+        assert "Correspondence" not in title
+        assert "In Vitro" in title or "Bioactivity" in title or "RGD" in title
+
 
 class TestSectionParser:
     """Tests for SectionParser."""

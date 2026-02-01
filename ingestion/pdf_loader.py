@@ -222,23 +222,48 @@ class TextCleaner:
         Returns:
             Extracted title or None
         """
-        # Take first few lines
         lines = [l.strip() for l in text.split('\n') if l.strip()]
         if not lines:
             return None
         
-        # Title is usually in first 1-3 lines, often the longest early line
-        candidates = lines[:5]
-        
-        # Filter out lines that look like metadata
-        filtered = [
-            line for line in candidates
-            if not re.match(r'^(author|doi|published|volume|issue|pages?)[:|\s]', line, re.IGNORECASE)
-            and len(line) > 20
+        # Patterns that indicate non-title lines
+        skip_patterns = [
+            r'^(author|doi|published|volume|issue|pages?|correspondence|received|accepted|copyright)[:|\s]',
+            r'^[\d\s\.\-]+$',  # Just numbers
         ]
+        # Author line: "Name,1 Name2,2" - comma followed by superscript number
+        author_pattern = re.compile(r',\s*\d+\s|,\d+[,\s]')
         
-        if filtered:
-            # Return longest line as likely title
-            return max(filtered, key=len)
+        def is_author_line(line: str) -> bool:
+            return bool(author_pattern.search(line)) or len(re.findall(r',\d+', line)) >= 2
         
-        return lines[0] if lines else None
+        def is_metadata_line(line: str) -> bool:
+            lower = line.lower()
+            if len(line) < 15:
+                return True
+            for pat in skip_patterns:
+                if re.match(pat, line, re.IGNORECASE):
+                    return True
+            if any(kw in lower for kw in ['department', 'university', 'hospital', 'institute', '@']):
+                return True
+            return False
+        
+        # Collect title lines (typically 1-3 lines before authors)
+        title_lines = []
+        for line in lines[:12]:
+            if is_author_line(line) or is_metadata_line(line):
+                if title_lines:
+                    break
+                continue
+            if line.lower() in ('research article', 'original article', 'brief report'):
+                continue
+            title_lines.append(line)
+            if len(title_lines) >= 3:
+                break
+        
+        if not title_lines:
+            return lines[0] if lines else None
+        
+        # Join if multi-line title (common when title wraps)
+        title = ' '.join(title_lines)
+        return title if len(title) > 10 else (title_lines[0] or None)
