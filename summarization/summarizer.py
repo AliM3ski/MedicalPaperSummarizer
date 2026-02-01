@@ -112,9 +112,11 @@ class MedicalPaperSummarizer:
         
         # Step 5: Extract structured information
         logger.info("Extracting structured information...")
+        preamble = self._get_preamble(cleaned_text, sections)
         structured_info = self.map_reduce.extract_structured_info(
             sections,
-            section_summaries
+            section_summaries,
+            preamble=preamble
         )
         
         # Step 6: Extract title if not provided
@@ -169,6 +171,16 @@ class MedicalPaperSummarizer:
                 f"Unsupported file format: {suffix}. "
                 "Supported formats: .pdf, .xml"
             )
+    
+    def _get_preamble(self, cleaned_text: str, sections: dict) -> str:
+        """Get text before first section (often contains abstract for numbered-format papers)."""
+        if not sections or 'full_text' in sections:
+            return ""
+        first_start = min(s.start_index for s in sections.values())
+        if first_start <= 0:
+            return ""
+        preamble = cleaned_text[:first_start].strip()
+        return self.chunker.truncate_to_tokens(preamble, 1500)
     
     def _extract_keywords(self, text: str, max_tokens: int = 2000) -> list:
         """

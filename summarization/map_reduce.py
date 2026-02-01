@@ -157,7 +157,8 @@ class MapReduceSummarizer:
     def extract_structured_info(
         self,
         sections: Dict[str, Section],
-        section_summaries: Dict[str, str]
+        section_summaries: Dict[str, str],
+        preamble: str = ""
     ) -> dict:
         """
         Extract structured information for final summary.
@@ -165,6 +166,7 @@ class MapReduceSummarizer:
         Args:
             sections: Original sections
             section_summaries: Section summaries
+            preamble: Text before first section (often contains abstract)
             
         Returns:
             Dictionary with structured information
@@ -172,7 +174,7 @@ class MapReduceSummarizer:
         result = {}
         
         # Extract metadata (objective, study type, population)
-        metadata_text = self._get_metadata_text(sections)
+        metadata_text = self._get_metadata_text(sections, preamble)
         if metadata_text:
             try:
                 metadata = self._extract_metadata(metadata_text)
@@ -180,14 +182,20 @@ class MapReduceSummarizer:
             except Exception as e:
                 logger.error(f"Error extracting metadata: {e}")
         
-        # Extract methods summary
-        if 'methods' in section_summaries:
+        # Extract methods summary (use raw section content when available for better detail)
+        methods_source = ""
+        if 'methods' in sections:
+            methods_source = self.chunker.truncate_to_tokens(
+                sections['methods'].content, 2000
+            )
+        elif 'methods' in section_summaries:
+            methods_source = section_summaries['methods']
+        if methods_source:
             try:
-                methods_summary = self._extract_methods(section_summaries['methods'])
-                result['methods'] = methods_summary
+                result['methods'] = self._extract_methods(methods_source)
             except Exception as e:
                 logger.error(f"Error extracting methods: {e}")
-                result['methods'] = section_summaries['methods']
+                result['methods'] = section_summaries.get('methods', '')
         
         # Extract key findings
         if 'results' in section_summaries:
@@ -220,17 +228,20 @@ class MapReduceSummarizer:
         
         return result
     
-    def _get_metadata_text(self, sections: Dict[str, Section]) -> str:
-        """Get text for metadata extraction (abstract or intro)."""
+    def _get_metadata_text(self, sections: Dict[str, Section], preamble: str = "") -> str:
+        """Get text for metadata extraction (abstract, preamble, or intro)."""
+        parts = []
         if 'abstract' in sections:
-            return sections['abstract'].content
-        elif 'introduction' in sections:
-            # Use first part of introduction
-            return self.chunker.truncate_to_tokens(
-                sections['introduction'].content,
-                1000
+            parts.append(sections['abstract'].content)
+        elif preamble:
+            # Preamble often contains abstract for papers with numbered sections
+            parts.append(preamble)
+        if 'introduction' in sections:
+            intro = self.chunker.truncate_to_tokens(
+                sections['introduction'].content, 1200
             )
-        return ""
+            parts.append(intro)
+        return "\n\n".join(parts) if parts else ""
     
     def _get_limitations_text(
         self,

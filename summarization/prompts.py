@@ -56,18 +56,26 @@ COMBINED SUMMARY:"""
     # Extract study metadata
     METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text:
 
-1. Study Type (e.g., RCT, observational cohort, meta-analysis, case-control, cross-sectional)
-2. Study Population (sample size, demographics, key inclusion/exclusion criteria)
-3. Primary Objective or Research Question
+1. **objective**: The primary research aim, question, or purpose. What were the authors trying to find out or demonstrate? Be specific.
+
+2. **study_type**: Type of study. Examples:
+   - Clinical: RCT, cohort, case-control, cross-sectional, meta-analysis
+   - Basic science: In vitro study, laboratory study, animal study, cell culture study
+   - Other: Systematic review, case series, observational study
+
+3. **population**: Who or what was studied:
+   - For clinical studies: sample size, demographics, inclusion/exclusion criteria
+   - For in vitro/lab studies: cell lines, materials, specimens, or experimental subjects used
+   - For animal studies: species, sample size
 
 TEXT:
 {text}
 
-Respond ONLY with a JSON object:
+Respond ONLY with a JSON object (no markdown, no explanation):
 {
+  "objective": "...",
   "study_type": "...",
-  "population": "...",
-  "objective": "..."
+  "population": "..."
 }"""
     
     # Extract methods summary
