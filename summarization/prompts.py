@@ -21,7 +21,65 @@ CRITICAL RULES - NEVER VIOLATE:
 
 Your role is to extract and condense information, not to interpret or advise."""
     
+    # Chunk summarization (map phase)
+    CHUNK_SUMMARY_PROMPT = """Summarize the following excerpt from the {section_name} section of a medical research paper.
 
+INSTRUCTIONS:
+- Extract key information relevant to a {section_name} section
+- Preserve ALL numerical values, statistics, and measurements exactly
+- Keep technical terminology
+- Be concise but comprehensive
+- If multiple findings, list them separately
+- Do not add interpretation
+
+TEXT:
+{chunk_text}
+
+SUMMARY:"""
+    
+    # Section synthesis (reduce phase)
+    SECTION_SYNTHESIS_PROMPT = """You have {num_chunks} summaries from different parts of the {section_name} section. Combine them into a coherent summary.
+
+INSTRUCTIONS:
+- Merge overlapping information
+- Preserve ALL numerical values exactly
+- Maintain logical flow
+- Eliminate redundancy
+- Keep concise (max 300 words for most sections)
+- Organize information logically
+
+CHUNK SUMMARIES:
+{chunk_summaries}
+
+COMBINED SUMMARY:"""
+    
+    # Extract study metadata
+    METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text. The text may include abstract, introduction, and methods sections - extract from wherever the information appears.
+
+1. **objective**: The primary research aim, question, or purpose. What were the authors trying to find out or demonstrate? Be specific. Often stated in the abstract or introduction.
+
+2. **study_type**: Type of study. Look in both introduction and methods. Examples:
+   - Clinical: RCT, cohort, case-control, cross-sectional, meta-analysis
+   - Basic science: In vitro study, laboratory study, animal study, cell culture study, experimental study
+   - Other: Systematic review, case series, observational study
+
+3. **population**: Who or what was studied. Look in methods section if not in abstract:
+   - For clinical studies: sample size, demographics, inclusion/exclusion criteria
+   - For in vitro/lab studies: cell lines (e.g., mouse osteoblasts), materials (e.g., Ti6Al4V alloy), specimens
+   - For animal studies: species, sample size
+
+You MUST provide all three fields. If not explicitly stated, infer the closest match from context.
+
+TEXT:
+{text}
+
+Respond ONLY with a JSON object (no markdown, no explanation):
+{
+  "objective": "...",
+  "study_type": "...",
+  "population": "..."
+}"""
+    
     # Extract methods summary
     METHODS_PROMPT = """Summarize the methodology of this study. Focus on:
 
