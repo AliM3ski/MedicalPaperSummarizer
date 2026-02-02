@@ -53,30 +53,6 @@ CHUNK SUMMARIES:
 
 COMBINED SUMMARY:"""
     
-    # Extract study metadata
-    METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text. The text may include abstract, introduction, and methods sections - extract from wherever the information appears.
-
-1. **study_type**: Type of study. Look in both introduction and methods. Examples:
-   - Clinical: RCT, cohort, case-control, cross-sectional, meta-analysis
-   - Basic science: In vitro study, laboratory study, animal study, cell culture study, experimental study
-   - Other: Systematic review, case series, observational study
-
-2. **population**: Who or what was studied. Look in methods section if not in abstract:
-   - For clinical studies: sample size, demographics, inclusion/exclusion criteria
-   - For in vitro/lab studies: cell lines (e.g., mouse osteoblasts), materials (e.g., Ti6Al4V alloy), specimens
-   - For animal studies: species, sample size
-
-You MUST provide both fields. If not explicitly stated, infer the closest match from context.
-
-TEXT:
-{text}
-
-Respond ONLY with a JSON object (no markdown, no explanation):
-{
-  "study_type": "...",
-  "population": "..."
-}"""
-    
     # Extract key findings
     FINDINGS_PROMPT = """Extract the key findings from the results section. 
 
@@ -187,11 +163,6 @@ def get_section_synthesis_prompt(section_name: str, chunk_summaries: str, num_ch
         chunk_summaries=chunk_summaries,
         num_chunks=num_chunks
     )
-
-
-def get_metadata_prompt(text: str) -> str:
-    """Get prompt for metadata extraction."""
-    return PromptTemplates.METADATA_EXTRACTION_PROMPT.format(text=text)
 
 
 def get_findings_prompt(results_text: str) -> str:

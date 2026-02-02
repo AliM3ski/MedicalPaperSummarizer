@@ -174,15 +174,6 @@ class MapReduceSummarizer:
         """
         result = {}
         
-        # Extract metadata (study type, population)
-        metadata_text = self._get_metadata_text(sections, preamble)
-        if metadata_text:
-            try:
-                metadata = self._extract_metadata(metadata_text)
-                result.update(metadata)
-            except Exception as e:
-                logger.error(f"Error extracting metadata: {e}")
-        
         # Extract key findings
         if 'results' in section_summaries:
             try:
@@ -214,26 +205,6 @@ class MapReduceSummarizer:
         
         return result
     
-    def _get_metadata_text(self, sections: Dict[str, Section], preamble: str = "") -> str:
-        """Get text for metadata extraction (study_type, population)."""
-        parts = []
-        if 'abstract' in sections:
-            parts.append(sections['abstract'].content)
-        elif preamble:
-            parts.append(preamble)
-        if 'introduction' in sections:
-            intro = self.chunker.truncate_to_tokens(
-                sections['introduction'].content, 1200
-            )
-            parts.append(intro)
-        # Include methods start - study_type and population often appear there
-        if 'methods' in sections:
-            methods = self.chunker.truncate_to_tokens(
-                sections['methods'].content, 800
-            )
-            parts.append(f"METHODS:\n{methods}")
-        return "\n\n".join(parts) if parts else ""
-    
     def _get_limitations_text(
         self,
         sections: Dict[str, Section],
@@ -257,19 +228,6 @@ class MapReduceSummarizer:
         elif 'discussion' in summaries:
             return summaries['discussion']
         return ""
-    
-    def _extract_metadata(self, text: str) -> dict:
-        """Extract study metadata."""
-        prompt = prompts.get_metadata_prompt(text)
-        
-        response = self.llm.complete(
-            prompt=prompt,
-            system_prompt=prompts.PromptTemplates.SYSTEM_PROMPT,
-            temperature=0.1,
-            json_mode=True
-        )
-        
-        return self.llm.parse_json_response(response)
     
     def _extract_findings(self, results_text: str) -> List[str]:
         """Extract key findings as list."""

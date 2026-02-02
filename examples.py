@@ -67,8 +67,6 @@ def example_output_formats():
     # Create example summary
     summary = PaperSummary(
         title="Example: Efficacy of Drug X in Type 2 Diabetes",
-        study_type="Randomized Controlled Trial",
-        population="600 adults aged 40-75 with HbA1c 7.5-10%",
         key_findings=[
             "HbA1c reduction: Drug X -1.2% vs placebo -0.3% (p<0.001)",
             "HbA1c <7%: Drug X 52% vs placebo 18%",

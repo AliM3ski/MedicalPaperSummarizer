@@ -160,8 +160,6 @@ def run_basic_test():
         # Create test summary
         summary = PaperSummary(
             title="Test Paper",
-            study_type="Test study",
-            population="Test population",
             key_findings=["Finding 1", "Finding 2"],
             author_conclusions="Test conclusions",
             keywords=["test"]
