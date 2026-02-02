@@ -131,10 +131,8 @@ class MedicalPaperSummarizer:
         # Step 8: Build final summary
         summary = PaperSummary(
             title=title,
-            objective=structured_info.get('objective', ''),
             study_type=structured_info.get('study_type', ''),
             population=structured_info.get('population', ''),
-            methods=structured_info.get('methods', ''),
             key_findings=structured_info.get('key_findings', []),
             limitations=structured_info.get('limitations', []),
             author_conclusions=structured_info.get('author_conclusions', ''),

@@ -174,7 +174,7 @@ class MapReduceSummarizer:
         """
         result = {}
         
-        # Extract metadata (objective, study type, population)
+        # Extract metadata (study type, population)
         metadata_text = self._get_metadata_text(sections, preamble)
         if metadata_text:
             try:
@@ -182,21 +182,6 @@ class MapReduceSummarizer:
                 result.update(metadata)
             except Exception as e:
                 logger.error(f"Error extracting metadata: {e}")
-        
-        # Extract methods summary (use raw section content when available for better detail)
-        methods_source = ""
-        if 'methods' in sections:
-            methods_source = self.chunker.truncate_to_tokens(
-                sections['methods'].content, 2000
-            )
-        elif 'methods' in section_summaries:
-            methods_source = section_summaries['methods']
-        if methods_source:
-            try:
-                result['methods'] = self._extract_methods(methods_source)
-            except Exception as e:
-                logger.error(f"Error extracting methods: {e}")
-                result['methods'] = section_summaries.get('methods', '')
         
         # Extract key findings
         if 'results' in section_summaries:
@@ -230,7 +215,7 @@ class MapReduceSummarizer:
         return result
     
     def _get_metadata_text(self, sections: Dict[str, Section], preamble: str = "") -> str:
-        """Get text for metadata extraction (objective, study_type, population)."""
+        """Get text for metadata extraction (study_type, population)."""
         parts = []
         if 'abstract' in sections:
             parts.append(sections['abstract'].content)
@@ -285,21 +270,6 @@ class MapReduceSummarizer:
         )
         
         return self.llm.parse_json_response(response)
-    
-    def _extract_methods(self, methods_text: str) -> str:
-        """Extract methods summary."""
-        prompt = prompts.get_methods_prompt(methods_text)
-        
-        response = self.llm.complete(
-            prompt=prompt,
-            system_prompt=prompts.PromptTemplates.SYSTEM_PROMPT,
-            temperature=0.2
-        )
-        
-        text = response.strip()
-        # Remove leading markdown headers (## or ###) if LLM added them
-        text = re.sub(r'^#+\s*[^\n]+\n*', '', text).strip()
-        return text
     
     def _extract_findings(self, results_text: str) -> List[str]:
         """Extract key findings as list."""

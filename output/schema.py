@@ -13,20 +13,12 @@ class PaperSummary(BaseModel):
         description="Full title of the research paper"
     )
     
-    objective: str = Field(
-        description="Primary research objective or question"
-    )
-    
     study_type: str = Field(
         description="Type of study (e.g., RCT, meta-analysis, cohort study, case-control)"
     )
     
     population: str = Field(
         description="Study population characteristics (sample size, demographics, inclusion/exclusion criteria)"
-    )
-    
-    methods: str = Field(
-        description="Key methodological details (design, interventions, measurements, analysis)"
     )
     
     key_findings: List[str] = Field(
@@ -83,16 +75,10 @@ class PaperSummary(BaseModel):
         """Convert summary to formatted markdown."""
         md = f"""# {self.title}
 
-## Objective
-{self.objective}
-
 ## Study Design
 **Type:** {self.study_type}
 
 **Population:** {self.population}
-
-## Methods
-{self.methods}
 
 ## Key Findings
 """
@@ -125,10 +111,8 @@ class PaperSummary(BaseModel):
         json_schema_extra = {
             "example": {
                 "title": "Efficacy of Drug X in Type 2 Diabetes: A Randomized Controlled Trial",
-                "objective": "To evaluate the efficacy and safety of Drug X versus placebo in adults with type 2 diabetes",
                 "study_type": "Randomized Controlled Trial (RCT)",
                 "population": "600 adults aged 40-75 with HbA1c 7.5-10%, BMI 25-40 kg/m², duration ≥6 months",
-                "methods": "Double-blind RCT, 1:1 randomization to Drug X 10mg daily or placebo for 24 weeks. Primary endpoint: change in HbA1c from baseline.",
                 "key_findings": [
                     "Mean HbA1c reduction: Drug X -1.2% vs placebo -0.3% (difference -0.9%, 95% CI -1.1 to -0.7, p<0.001)",
                     "Achievement of HbA1c <7%: Drug X 52% vs placebo 18% (p<0.001)",

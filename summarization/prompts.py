@@ -56,47 +56,26 @@ COMBINED SUMMARY:"""
     # Extract study metadata
     METADATA_EXTRACTION_PROMPT = """Extract the following metadata from this research paper text. The text may include abstract, introduction, and methods sections - extract from wherever the information appears.
 
-1. **objective**: The primary research aim, question, or purpose. What were the authors trying to find out or demonstrate? Be specific. Often stated in the abstract or introduction.
-
-2. **study_type**: Type of study. Look in both introduction and methods. Examples:
+1. **study_type**: Type of study. Look in both introduction and methods. Examples:
    - Clinical: RCT, cohort, case-control, cross-sectional, meta-analysis
    - Basic science: In vitro study, laboratory study, animal study, cell culture study, experimental study
    - Other: Systematic review, case series, observational study
 
-3. **population**: Who or what was studied. Look in methods section if not in abstract:
+2. **population**: Who or what was studied. Look in methods section if not in abstract:
    - For clinical studies: sample size, demographics, inclusion/exclusion criteria
    - For in vitro/lab studies: cell lines (e.g., mouse osteoblasts), materials (e.g., Ti6Al4V alloy), specimens
    - For animal studies: species, sample size
 
-You MUST provide all three fields. If not explicitly stated, infer the closest match from context.
+You MUST provide both fields. If not explicitly stated, infer the closest match from context.
 
 TEXT:
 {text}
 
 Respond ONLY with a JSON object (no markdown, no explanation):
 {
-  "objective": "...",
   "study_type": "...",
   "population": "..."
 }"""
-    
-    # Extract methods summary
-    METHODS_PROMPT = """Summarize the methodology of this study. Focus on:
-
-1. Study design and duration
-2. Interventions or exposures
-3. Primary and secondary endpoints/outcomes
-4. Statistical methods
-5. Key procedures
-
-Be specific and include all relevant details. Preserve numerical values (doses, durations, sample sizes).
-
-Respond with plain paragraphs only. Do NOT use markdown headers (##), bullet points, or section titles. Write flowing prose.
-
-METHODS SECTION:
-{methods_text}
-
-METHODS SUMMARY (max 250 words):"""
     
     # Extract key findings
     FINDINGS_PROMPT = """Extract the key findings from the results section. 
@@ -173,16 +152,12 @@ SECTION SUMMARIES:
 
 Using the information above, create a comprehensive but concise summary. Extract:
 
-1. Study objective
-2. Methods (design, population, interventions, outcomes)
-3. Key findings with exact numbers
-4. Limitations
-5. Author conclusions
+1. Key findings with exact numbers
+2. Limitations
+3. Author conclusions
 
 Respond with a JSON object following this structure:
 {{
-  "objective": "Primary research question or aim",
-  "methods": "Brief methods summary",
   "key_findings": [
     "Finding 1 with exact statistics",
     "Finding 2 with exact statistics"
@@ -217,11 +192,6 @@ def get_section_synthesis_prompt(section_name: str, chunk_summaries: str, num_ch
 def get_metadata_prompt(text: str) -> str:
     """Get prompt for metadata extraction."""
     return PromptTemplates.METADATA_EXTRACTION_PROMPT.format(text=text)
-
-
-def get_methods_prompt(methods_text: str) -> str:
-    """Get prompt for methods summarization."""
-    return PromptTemplates.METHODS_PROMPT.format(methods_text=methods_text)
 
 
 def get_findings_prompt(results_text: str) -> str:

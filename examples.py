@@ -31,7 +31,6 @@ def example_basic_usage():
     # Print results
     # print(f"Title: {summary.title}")
     # print(f"Study Type: {summary.study_type}")
-    # print(f"\nObjective:\n{summary.objective}")
     # print(f"\nKey Findings:")
     # for i, finding in enumerate(summary.key_findings, 1):
     #     print(f"{i}. {finding}")
@@ -68,10 +67,8 @@ def example_output_formats():
     # Create example summary
     summary = PaperSummary(
         title="Example: Efficacy of Drug X in Type 2 Diabetes",
-        objective="Evaluate efficacy and safety of Drug X versus placebo",
         study_type="Randomized Controlled Trial",
         population="600 adults aged 40-75 with HbA1c 7.5-10%",
-        methods="Double-blind RCT, 24 weeks, primary endpoint HbA1c change",
         key_findings=[
             "HbA1c reduction: Drug X -1.2% vs placebo -0.3% (p<0.001)",
             "HbA1c <7%: Drug X 52% vs placebo 18%",

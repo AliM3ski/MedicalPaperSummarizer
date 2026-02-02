@@ -187,10 +187,8 @@ class TestPaperSummary:
         """Test valid summary creation."""
         summary = PaperSummary(
             title="Test Paper",
-            objective="Test objective",
             study_type="RCT",
             population="100 adults",
-            methods="Double-blind trial",
             key_findings=["Finding 1", "Finding 2"],
             limitations=["Limitation 1"],
             author_conclusions="Significant results",
@@ -206,10 +204,8 @@ class TestPaperSummary:
         with pytest.raises(ValueError):
             PaperSummary(
                 title="Test",
-                objective="Test",
                 study_type="RCT",
                 population="100",
-                methods="Test",
                 key_findings=[],  # Empty findings
                 author_conclusions="Test"
             )
@@ -218,10 +214,8 @@ class TestPaperSummary:
         """Test keyword deduplication."""
         summary = PaperSummary(
             title="Test",
-            objective="Test",
             study_type="RCT",
             population="100",
-            methods="Test",
             key_findings=["Finding"],
             author_conclusions="Test",
             keywords=["diabetes", "Diabetes", "DIABETES", "treatment"]
@@ -236,10 +230,8 @@ class TestPaperSummary:
         """Test markdown conversion."""
         summary = PaperSummary(
             title="Test Paper",
-            objective="Test objective",
             study_type="RCT",
             population="100 adults",
-            methods="Trial",
             key_findings=["Finding 1"],
             author_conclusions="Conclusions",
             keywords=["test"]
@@ -248,7 +240,7 @@ class TestPaperSummary:
         markdown = summary.to_markdown()
         
         assert "# Test Paper" in markdown
-        assert "## Objective" in markdown
+        assert "## Study Design" in markdown
         assert "## Key Findings" in markdown
         assert "⚠️" in markdown  # Safety disclaimer
 
